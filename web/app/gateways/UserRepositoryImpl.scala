@@ -3,18 +3,9 @@ package gateways
 import akka.actor.ActorSystem
 import akka.stream.alpakka.dynamodb.scaladsl.DynamoDb
 import com.github.matsluni.akkahttpspi.AkkaHttpClient
-import models.{Age, FullName, User, UserId, UserRepository}
+import models._
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
-import software.amazon.awssdk.services.dynamodb.model.{
-  AttributeAction,
-  AttributeValue,
-  AttributeValueUpdate,
-  DeleteItemRequest,
-  GetItemRequest,
-  Put,
-  PutItemRequest,
-  UpdateItemRequest
-}
+import software.amazon.awssdk.services.dynamodb.model._
 
 import java.net.URI
 import javax.inject.Inject
