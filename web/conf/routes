@@ -1,0 +1,1 @@
+GET        /users/:userId        controllers.UserController.find(userId: String)
