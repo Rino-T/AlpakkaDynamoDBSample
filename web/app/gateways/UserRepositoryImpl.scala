@@ -5,7 +5,7 @@ import akka.stream.alpakka.dynamodb.scaladsl.DynamoDb
 import com.github.matsluni.akkahttpspi.AkkaHttpClient
 import models.{Age, FullName, User, UserId, UserRepository}
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
-import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, GetItemRequest}
+import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, GetItemRequest, Put, PutItemRequest}
 
 import java.net.URI
 import javax.inject.Inject
@@ -49,5 +49,21 @@ class UserRepositoryImpl @Inject() (implicit ec: ExecutionContext, system: Actor
         None
       }
     }
+  }
+
+  override def add(user: User): Unit = {
+    val itemValues = Map(
+      "user_id"   -> AttributeValue.builder().s(user.id.value.toString).build(),
+      "user_name" -> AttributeValue.builder().s(user.name.value).build(),
+      "age"       -> AttributeValue.builder().n(user.age.value.toString).build()
+    )
+
+    val request = PutItemRequest
+      .builder()
+      .tableName("users")
+      .item(itemValues.asJava)
+      .build()
+
+    DynamoDb.single(request).foreach(println)
   }
 }
