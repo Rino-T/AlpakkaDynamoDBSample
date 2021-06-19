@@ -6,11 +6,14 @@ import com.github.matsluni.akkahttpspi.AkkaHttpClient
 import models.{Age, FullName, User, UserId, UserRepository}
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
 import software.amazon.awssdk.services.dynamodb.model.{
+  AttributeAction,
   AttributeValue,
+  AttributeValueUpdate,
   DeleteItemRequest,
   GetItemRequest,
   Put,
-  PutItemRequest
+  PutItemRequest,
+  UpdateItemRequest
 }
 
 import java.net.URI
@@ -68,6 +71,32 @@ class UserRepositoryImpl @Inject() (implicit ec: ExecutionContext, system: Actor
       .builder()
       .tableName("users")
       .item(itemValues.asJava)
+      .build()
+
+    DynamoDb.single(request).foreach(println)
+  }
+
+  override def update(user: User): Unit = {
+    val itemKey = Map("user_id" -> AttributeValue.builder().s(user.id.value.toString).build())
+
+    val updatedValues = Map(
+      "user_name" -> AttributeValueUpdate
+        .builder()
+        .value(AttributeValue.builder().s(user.name.value).build())
+        .action(AttributeAction.PUT)
+        .build(),
+      "age" -> AttributeValueUpdate
+        .builder()
+        .value(AttributeValue.builder().n(user.age.value.toString).build())
+        .action(AttributeAction.PUT)
+        .build()
+    )
+
+    val request = UpdateItemRequest
+      .builder()
+      .tableName("users")
+      .key(itemKey.asJava)
+      .attributeUpdates(updatedValues.asJava)
       .build()
 
     DynamoDb.single(request).foreach(println)

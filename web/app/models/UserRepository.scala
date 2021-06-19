@@ -8,5 +8,7 @@ trait UserRepository {
 
   def add(user: User): Unit
 
+  def update(user: User): Unit
+
   def delete(userId: UserId): Unit
 }

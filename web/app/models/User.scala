@@ -6,7 +6,14 @@ case class User(
     id: UserId,
     name: FullName,
     age: Age
-)
+) {
+  def update(maybeName: Option[FullName], maybeAge: Option[Age]): User = {
+    copy(
+      name = maybeName getOrElse name,
+      age = maybeAge getOrElse age
+    )
+  }
+}
 
 case class UserId(value: UUID)
 object UserId {

@@ -1,6 +1,6 @@
 package controllers
 
-import controllers.viewmodels.AddUserRequest
+import controllers.viewmodels.{AddUserRequest, UpdateUserRequest}
 import models.{Age, FullName, User, UserId, UserRepository}
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
 
@@ -24,6 +24,20 @@ class UserController @Inject() (cc: ControllerComponents, userRepository: UserRe
     val user = User(UserId.generate, name, age)
     userRepository.add(user)
     Ok
+  }
+
+  def update(id: String): Action[UpdateUserRequest] = Action.async(UpdateUserRequest.validateJson(cc.parsers)) {
+    implicit request =>
+      val userId = UserId.from(id)
+      userRepository.find(userId).map {
+        case None => NotFound
+        case Some(user) =>
+          val name        = request.body.name.map(FullName.apply)
+          val age         = request.body.age.map(Age.apply)
+          val updatedUser = user.update(name, age)
+          userRepository.update(updatedUser)
+          Accepted
+      }
   }
 
   def delete(id: String): Action[AnyContent] = Action { implicit request =>
