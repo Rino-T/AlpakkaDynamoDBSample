@@ -5,7 +5,13 @@ import akka.stream.alpakka.dynamodb.scaladsl.DynamoDb
 import com.github.matsluni.akkahttpspi.AkkaHttpClient
 import models.{Age, FullName, User, UserId, UserRepository}
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
-import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, GetItemRequest, Put, PutItemRequest}
+import software.amazon.awssdk.services.dynamodb.model.{
+  AttributeValue,
+  DeleteItemRequest,
+  GetItemRequest,
+  Put,
+  PutItemRequest
+}
 
 import java.net.URI
 import javax.inject.Inject
@@ -62,6 +68,18 @@ class UserRepositoryImpl @Inject() (implicit ec: ExecutionContext, system: Actor
       .builder()
       .tableName("users")
       .item(itemValues.asJava)
+      .build()
+
+    DynamoDb.single(request).foreach(println)
+  }
+
+  override def delete(userId: UserId): Unit = {
+    val keyToGet = Map("user_id" -> AttributeValue.builder().s(userId.value.toString).build())
+
+    val request = DeleteItemRequest
+      .builder()
+      .tableName("users")
+      .key(keyToGet.asJava)
       .build()
 
     DynamoDb.single(request).foreach(println)

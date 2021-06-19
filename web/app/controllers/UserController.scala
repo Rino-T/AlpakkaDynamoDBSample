@@ -25,4 +25,10 @@ class UserController @Inject() (cc: ControllerComponents, userRepository: UserRe
     userRepository.add(user)
     Ok
   }
+
+  def delete(id: String): Action[AnyContent] = Action { implicit request =>
+    val userId = UserId.from(id)
+    userRepository.delete(userId)
+    NoContent
+  }
 }

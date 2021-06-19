@@ -1,2 +1,3 @@
 GET         /users/:userId        controllers.UserController.find(userId: String)
 POST        /users                controllers.UserController.add
+DELETE      /users/:userId        controllers.UserController.delete(userId: String)
